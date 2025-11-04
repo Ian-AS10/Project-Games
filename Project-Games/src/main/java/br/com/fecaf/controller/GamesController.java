@@ -5,14 +5,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/games")
@@ -33,9 +34,19 @@ public class GamesController {
         }
     }
 
+    //Listar Todos os Jogos
     @GetMapping
     public List<Games> listarGames() {
         return games;
+    }
+
+    //Busca por ID
+    @GetMapping("/{id}")
+    public Games buscaId (@PathVariable int id) {
+        Optional<Games> jogoEncontrado = games.stream().filter(games -> games.getId() == id).findFirst();
+        if (jogoEncontrado.isPresent()){
+            return jogoEncontrado.get();
+        } throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ID" + id + "não encontrado!!!!");
     }
 
 
